@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static' ,filename='layout.css')}}">
+    <style>
+      html {
+        overflow-x: hidden;
+      }
+    </style>
+  </head>
+
+  <body class="bg-light">
+
+    <div class="row">
+      <div class="col-md-4 col-xl-3">
+
+        <div
+          class="d-flex flex-column justify-content-center align-items-center navbar-expand-md sticky-top p-3 rounded"
+          style="background-color: #16161d;">
+
+          <div class="row d-flex flex-md-column align-items-center">
+            <a class="col-6 col-md-10 text-white" href="/instructordash">
+              <img src="{{url_for('static',filename='logo.png')}}" class="w-100 m-2 bg-white rounded">
+            </a>
+
+            <div class="text-center">
+              <p class="h4 p-2 text-white">SNU Results</p>
+            </div>
+
+            <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse" data-target="#colNav">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+          </div>
+
+          <div class="collapse navbar-collapse" id="colNav">
+            <div class="d-flex flex-column align-items">
+
+              <div class="mb-2 text-center">
+                <hr class="bg-white" />
+                <p class="h4 p-2 text-white">Instructor Dashboard</p>
+              </div>
+
+              <div class="mb-2">
+                <p class="btn btn-success btn-lg btn-block">
+                  Welcome {{session.insid}}
+                </p>
+                <hr class="bg-white" />
+              </div>
+
+              <div class="mb-2">
+                <a class="btn btn-lg btn-block btn-primary" style="background-color: #508bfc;" type="submit"
+                  href="/instructordash">
+                  Home
+                </a>
+              </div>
+
+              <div class="mb-2">
+                <a class="btn btn-lg btn-block btn-primary" style="background-color: #508bfc;" type="submit"
+                href="/addexam/{{coursename}}">
+                Add Exam
+              </a>
+              </div>
+
+              <div class="mb-2">
+                <a class="btn btn-lg btn-block btn-primary" style="background-color: #508bfc;" type="submit"
+                href="/addstudents/{{coursename}}">
+                Add students
+              </a>
+                <hr class="bg-white" />
+              </div>
+
+              <div class="mt-2 mb-2">
+                <a class="btn btn-lg btn-block btn-light" type="submit" href="/instructorlogout">
+                  Logout
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        {% include 'includes/_messages.html' %}
+        {% block body %}{% endblock %}
+
+        <nav class="mt-4">
+          <div class="d-flex flex-wrap nav nav-pills" id="nav-tab" role="tablist">
+            <button class="nav-link  active px-3 ml-3 m-2" id="details" data-bs-toggle="tab"
+              data-bs-target="#details-tab" type="button" role="tab" aria-controls="nav-home"
+              aria-selected="true">Course Details</button>
+            <button class="nav-link px-3 ml-3 m-2" id="students" data-bs-toggle="tab" data-bs-target="#students-tab"
+              type="button" role="tab" aria-controls="nav-home" aria-selected="true">List of students</button>
+            {% for exam in exams %}
+            <button class="nav-link px-3 ml-4 m-2" id="{{exam.exam_name | replace(' ','')}}" data-bs-toggle="tab"
+              data-bs-target="#{{exam.exam_name | replace(' ','')}}-tab" type="button" role="tab" aria-controls="nav-home"
+              aria-selected="true">{{exam.exam_name}}</button>
+            {% endfor %}
+          </div>
+        </nav>
+
+        <div class="tab-content" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="details-tab" role="tabpanel" aria-labelledby="details">
+            <div class="bg-white border rounded d-flex flex-column justify-content-center mt-4">
+              <div>
+                <p class="h4 p-2 m-2">Course Code : {{details[0].course_code}}</p>
+              </div>
+              <div>
+                <p class="h4 p-2 m-2">Course Title : {{details[0].course_title}}</p>
+              </div>
+              <div>
+                <p class="h4 p-2 m-2">Semester : {{details[0].semester}}</p>
+              </div>
+              <div>
+                <p class="h4 p-2 m-2">Offered Batch : {{details[0].batch}}</p>
+              </div>
+              <div>
+                <p class="h4 p-2 m-2">Course related Branch : {{details[0].branch}}</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="tab-pane fade" id="students-tab" role="tabpanel" aria-labelledby="students">
+
+
+            {% if not students %}
+            <div class="mt-4 container">
+              <p class="h3">No students have been added,add students using the add student option!</p>
+            </div>
+            {% endif %}
+
+            {% if students %}
+
+            <table class="mt-4 table rounded table-striped table-bordered table-responsive-md">
+
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">Student Name</th>
+                  <th scope="col">Roll Number</th>
+                  <th scope="col">Email ID</th>
+                  <th scope="col">Phone Number</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for student in students %}
+
+                <tr>
+                  <td>
+                    <a href="/removestudent?coursename={{details[0].course_code}}&&roll_number={{student.Roll_Number}}">
+                      <p class="btn btn-sm m-1 mr-2 btn-danger">X</p>
+                    </a>
+                    {{student.Student_Name}}
+                  </td>
+                  <td>{{student.Roll_Number}}</td>
+                  <td>{{student.Student_email}}</td>
+                  <td>{{student.Student_phone}}</td>
+                </tr>
+
+                {% endfor %}
+
+              </tbody>
+
+            </table>
+            {% endif %}
+          </div>
+
+          {% for exam in exams %}
+          
+          <div class="tab-pane fade" id="{{exam.exam_name | replace(' ','') }}-tab" role="tabpanel" aria-labelledby="{{exam.exam_name | replace(' ','')}}">
+
+            <div class="mt-4 d-flex justify-content-between">
+              <a href="/deleteexam?coursename={{details[0].course_code}}&exam={{exam.exam_name}}">
+                <p class="m-1 m-md-0 btn btn-danger p-2">Delete Exam</p>
+              </a>
+
+              <a href="/modifyexam?coursename={{details[0].course_code}}&exam={{exam.exam_name}}">
+                <p class="m-1 m-md-0 btn btn-warning p-2 ">Modify Exam</p>
+              </a>
+
+              <a href="/updatemarks?coursename={{details[0].course_code}}&exam={{exam.exam_name}}">
+                <p class="m-1 m-md-0 btn btn-info p-2 ">Update Mutliple Marks</p>
+              </a>
+            </div>
+
+            <table class="mt-4 table table-striped table-bordered table-responsive-md">
+
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">Student Name</th>
+                  <th scope="col">Roll Number</th>
+                  <th scope="col">Marks</th>
+                  <th scope="col">Update Marks</th>
+                </tr>
+              </thead>
+
+
+              <tbody>
+              
+                {% for mark in marks %}
+
+                {% if mark.exam_name == exam.exam_name %}
+                
+                <tr>
+                  <td>{{mark.student_name}}</td>
+                  <td>{{mark.student_roll}}</td>
+                  <td>{{mark.student_marks}}/{{exam.exam_maxmarks}} </td>
+                  <td class="col-md-3">
+                    <form method="POST"
+                      action="/updatemark?coursename={{details[0].course_code}}&exam={{mark.exam_name}}&rollnumber={{mark.student_roll}}">
+                      <input name="marks" class="col-md-3 p-2 mr-3" type="text">
+
+                      <button type="submit" class="btn btn-sm btn-info ">Update</p></a>
+
+                    </form>
+                  </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+
+              </tbody>
+
+            </table>
+          </div>
+          {% endfor %}
+        </div>
+
+      </div>
+
+    </div>
+
+    <script src='http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js'></script>
+
+    <script>
+
+      $(function () {
+
+        $('button[data-bs-toggle="tab"]').on('click', function (e) {
+          window.localStorage.setItem('activeTab', $(e.target).attr('data-bs-target'));
+        });
+        var activeTab = window.localStorage.getItem('activeTab');
+        if (activeTab) {
+          $('#nav-tab button[data-bs-target="' + activeTab + '"]').tab('show');
+          //window.localStorage.removeItem("activeTab");
+        }
+      });
+
+    </script>
+
+    <!-- JavaScript Bundle with Popper -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"></script>
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+      </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+      </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+      </script>
+  </body>
+
+</html>
