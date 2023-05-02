@@ -78,7 +78,7 @@ class AddCourseForm(Form) :
 	batch = SelectField('batch', choices=['2023', '2024', '2025', '2026'],
                        validators=[InputRequired()])
 	title = StringField('Course Title',[validators.InputRequired(),validators.Length(min = 1, max = 40)])
-	semester = SelectField('Semester', choices=['Monsoon 2022', 'Spring 2021', 'Monsoon 2020'],
+	semester = SelectField('Semester', choices=['Spring 2023','Monsoon 2022', 'Spring 2022'],
                        validators=[InputRequired()])
 
 class ModifyCourseForm(Form) :
